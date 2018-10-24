@@ -13,11 +13,7 @@ function presscount_post_url( $id = 0 ) {
   if( $id !== 0 ) {
     $url = get_the_permalink( $id );
   } else {
-    if( defined( 'DOING_AJAX' ) && DOING_AJAX && isset( $_GET['url'] ) ) {
-      $url = $_GET['url'];
-    } else {
-      $url = get_the_permalink();
-    }
+    $url = ( isset( $_GET['url'] ) ? $_GET['url'] : get_the_permalink() );
   }
 
   return $url;

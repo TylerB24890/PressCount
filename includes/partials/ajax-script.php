@@ -12,9 +12,9 @@
       var shares = Number(data);
 
       markup = (!isNaN(shares) ? shares : '0');
-      
+
       <?php if($text) : ?>
-        markup = markup + (parseInt(shares) == 1 ? ' <?php _e('Share', 'presscount'); ?>' : ' <?php _e('Shares', 'presscount'); ?>');
+        markup = markup + (parseInt(shares) == 1 ? ' <?php _e( 'Share', 'presscount' ); ?>' : ' <?php _e( 'Shares', 'presscount' ); ?>');
       <?php endif; ?>
 
       sc.html(markup);

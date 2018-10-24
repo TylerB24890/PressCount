@@ -23,7 +23,7 @@ class Init {
    * Add the 'ajaxurl' variable to the site header
    */
   public function add_ajax_url() {
-    echo '<script type="text/javascript">var presscount_ajax_url = "' . admin_url('admin-ajax.php') . '";</script>';
+    echo '<script type="text/javascript">var presscount_ajax_url = "' . admin_url( 'admin-ajax.php' ) . '";</script>';
   }
 
   /**
