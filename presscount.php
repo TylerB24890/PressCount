@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       PressCount
  * Plugin URI:        http://elexicon.com
- * Description:       Like Mashables share count with social share analytics directly in the dashboard.
+ * Description:       Collect and display social sharing data for individual articles & pages. View, analyize and sort data through the PressCount dashboard.
  * Version:           1.0.0
  * Author:            Elexicon
  * Author URI:        http://elexicon.com
@@ -28,7 +28,7 @@
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-	die("Sneaky sneaky...");
+	die( "Sneaky sneaky..." );
 }
 
 // Useful global constants
@@ -37,12 +37,12 @@ define( 'PRESSCOUNT_URL', plugin_dir_url( __FILE__ ) );
 define( 'PRESSCOUNT_PATH', dirname( __FILE__ ) . '/' );
 define( 'PRESSCOUNT_INC', PRESSCOUNT_PATH . 'includes/' );
 
-// Include files
+// Include setup file
 require_once PRESSCOUNT_INC . 'functions/setup.php';
 
 // Activation/Deactivation
 register_activation_hook( __FILE__, '\Elexicon\PressCount\Core\activate' );
 register_deactivation_hook( __FILE__, '\Elexicon\PressCount\Core\deactivate' );
 
-// Bootstrap
+// Bootstrap plugin
 \Elexicon\PressCount\Core\setup();

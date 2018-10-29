@@ -134,7 +134,8 @@ class Requests {
 
     // Save total share count to database
     set_transient( $pid . "_post_shares", $total_shares, 3600 );
-
+    update_post_meta($pid, '_post_shares', $total_shares);
+    
     return $total_shares;
   }
 }

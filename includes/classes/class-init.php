@@ -38,7 +38,7 @@ class Init {
     require_once PRESSCOUNT_INC . 'classes/class-shortcodes.php';
 
     if( is_admin() ) {
-      //require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/admin/class-presscount-admin.php';
+      require_once PRESSCOUNT_INC . 'admin/classes/class-admin-init.php';
     }
   }
 }
