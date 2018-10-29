@@ -16,7 +16,7 @@
  * Plugin Name:       PressCount
  * Plugin URI:        http://elexicon.com
  * Description:       Collect and display social sharing data for individual articles & pages. View, analyize and sort data through the PressCount dashboard.
- * Version:           0.8.0
+ * Version:           1.0.0
  * Author:            Elexicon
  * Author URI:        http://elexicon.com
  * License:           GPL-2.0+
