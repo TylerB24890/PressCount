@@ -40,7 +40,7 @@ class Init {
     require_once PRESSCOUNT_INC . 'classes/class-shortcodes.php';
 
     if( is_admin() ) {
-      require_once PRESSCOUNT_INC . 'admin/classes/class-init.php';
+      //require_once PRESSCOUNT_INC . 'admin/classes/class-init.php';
     }
   }
 }
