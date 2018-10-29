@@ -110,6 +110,9 @@ class Requests {
   /**
    * Calculate all shares together
    *
+   * Uses `apply_filters` to allow user to set custom transient expiration time
+   * 'presscount_expire' will change transient expiration time (Default: 3600 === 1 hour)
+   *
    * @return int
    */
   public function get_all_shares() {
@@ -129,7 +132,7 @@ class Requests {
     $total_shares = $share_base + $total_shares;
 
     // Save total share count to database
-    set_transient( $pid . "_post_shares", $total_shares, 3600 );
+    set_transient( $pid . "_post_shares", $total_shares, apply_filters( 'presscount_expire', 3600 ) );
     update_post_meta($pid, '_post_shares', $total_shares);
 
     return $total_shares;
