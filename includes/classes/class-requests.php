@@ -20,6 +20,12 @@ class Requests {
   private $url;
 
   /**
+   * Post ID
+   * @var int
+   */
+  private $pid;
+
+  /**
    * Facebook API Endpoint
    * @var string
    */
@@ -44,6 +50,7 @@ class Requests {
    */
   public function __construct( $url ) {
     $this->url = $url;
+    $this->pid = url_to_postid( $this->url );
 
     $this->fb_endpoint = 'http://graph.facebook.com/?id=' . $this->url;
     $this->linkedin_endpoint = 'http://www.linkedin.com/countserv/count/share?url=' . $this->url . '&format=json';
@@ -64,7 +71,9 @@ class Requests {
 
       $json = json_decode( $json_string, true );
 
-      return isset( $json['share']['share_count'] ) ? intval( $json['share']['share_count'] ) : 0;
+      $share_count = ( isset( $json['share']['share_count'] ) ? intval( $json['share']['share_count'] ) : 0 );
+
+      return $share_count;
     }
 
     return false;
@@ -82,7 +91,9 @@ class Requests {
     if( is_array( $resp ) ) {
       $json = json_decode( $resp['body'], true );
 
-      return isset( $json['count'] ) ? intval( $json['count'] ) : 0;
+      $share_count = ( isset( $json['count'] ) ? intval( $json['count'] ) : 0 );
+
+      return $share_count;
     }
 
     return false;
@@ -101,7 +112,9 @@ class Requests {
       $json_string = preg_replace( '/^receiveCount\((.*)\)$/', "\\1", $resp['body'] );
       $json = json_decode( $json_string, true );
 
-      return isset( $json['count'] ) ? intval( $json['count'] ) : 0;
+      $share_count = ( isset( $json['count'] ) ? intval( $json['count'] ) : 0 );
+
+      return $share_count;
     }
 
     return false;
@@ -117,13 +130,12 @@ class Requests {
    */
   public function get_all_shares() {
 
-    $pid = url_to_postid( $this->url );
-
-    if(get_transient( $pid . "_post_shares" ) ) {
-      return get_transient( $pid . "_post_shares" );
+    if( $this->pid !== 0 && get_transient( $this->pid . "_post_shares" ) ) {
+      return get_transient( $this->pid . "_post_shares" );
     }
 
     $share_base = 0;
+    $total_shares = 0;
 
     $total_shares += $this->get_fb();
     $total_shares += $this->get_linkedin();
@@ -131,9 +143,11 @@ class Requests {
 
     $total_shares = $share_base + $total_shares;
 
-    // Save total share count to database
-    set_transient( $pid . "_post_shares", $total_shares, apply_filters( 'presscount_expire', 3600 ) );
-    update_post_meta($pid, '_post_shares', $total_shares);
+    if( $this->pid !== 0 ) {
+      // Save total share count to database
+      set_transient( $this->pid . "_post_shares", $total_shares, apply_filters( 'presscount_expire', 3600 ) );
+      update_post_meta( $this->pid, '_post_shares', $total_shares );
+    }
 
     return $total_shares;
   }
