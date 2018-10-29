@@ -35,7 +35,7 @@ class Shortcodes {
       shortcode_atts(
         array(
           'text' => false,
-          'url' => get_the_permalink(),
+          'url' => presscount_post_url(),
           'id' => $post->ID
         ),
         $atts, 'share_count'
