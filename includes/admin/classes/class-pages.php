@@ -11,7 +11,7 @@ namespace Elexicon\PressCount\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) exit(); // No direct access
 
-class Admin_Pages {
+class Pages {
 
   public function __construct() {
     add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
@@ -32,4 +32,4 @@ class Admin_Pages {
   }
 }
 
-new \Elexicon\PressCount\Admin\Admin_Pages();
+new \Elexicon\PressCount\Admin\Pages();

@@ -53,8 +53,7 @@ class Requests {
   /**
    * Get number of shares on Facebook
    *
-   * @since     1.0.0
-   * @return    int
+   * @return int
    */
   public function get_fb() {
 
@@ -74,8 +73,7 @@ class Requests {
   /**
    * Get number of shares on linkedin
    *
-   * @since     1.0.0
-   * @return    int
+   * @return int
    */
   public function get_linkedin() {
 
@@ -93,8 +91,7 @@ class Requests {
   /**
    * Get number of shares on Pinterest
    *
-   * @since     1.0.0
-   * @return    int
+   * @return int
    */
   public function get_pinterest() {
 
@@ -113,8 +110,7 @@ class Requests {
   /**
    * Calculate all shares together
    *
-   * @since     1.0.0
-   * @return    int
+   * @return int
    */
   public function get_all_shares() {
 
@@ -135,7 +131,7 @@ class Requests {
     // Save total share count to database
     set_transient( $pid . "_post_shares", $total_shares, 3600 );
     update_post_meta($pid, '_post_shares', $total_shares);
-    
+
     return $total_shares;
   }
 }

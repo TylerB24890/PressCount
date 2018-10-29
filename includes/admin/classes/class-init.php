@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Requests data from social APIs
+ * Setups and initializes the PressCount Admin Dashboard
  *
  * @package presscount
  */
@@ -11,7 +11,7 @@ namespace Elexicon\PressCount\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) exit(); // No direct access
 
-class Admin_Init {
+class Init {
 
   public function __construct() {
 
@@ -23,8 +23,9 @@ class Admin_Init {
   }
 
   private function load_admin_dependencies() {
-    require_once PRESSCOUNT_INC . 'admin/classes/class-admin-pages.php';
+    require_once PRESSCOUNT_INC . 'admin/classes/class-pages.php';
+    require_once PRESSCOUNT_INC . 'admin/classes/class-settings.php';
   }
 }
 
-new \Elexicon\PressCount\Admin\Admin_Init();
+new \Elexicon\PressCount\Admin\Init();

@@ -1,3 +1,9 @@
+<?php
+/**
+ * AJAX Script & HTML markup for shortcode
+ */
+?>
+
 <span id="presscount_<?php echo $id;  ?>"></span>
 <script>
   jQuery(document).ready(function() {
@@ -14,7 +20,7 @@
       markup = (!isNaN(shares) ? shares : '0');
 
       <?php if($text) : ?>
-        markup = markup + (parseInt(shares) == 1 ? ' <?php _e( 'Share', 'presscount' ); ?>' : ' <?php _e( 'Shares', 'presscount' ); ?>');
+        markup = markup + (parseInt(shares) == 1 ? ' <?php echo $text_single; ?>' : ' <?php echo $text_multiple; ?>');
       <?php endif; ?>
 
       sc.html(markup);

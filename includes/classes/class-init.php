@@ -21,6 +21,8 @@ class Init {
 
   /**
    * Add the 'ajaxurl' variable to the site header
+   *
+   * @return HTML script tag
    */
   public function add_ajax_url() {
     echo '<script type="text/javascript">var presscount_ajax_url = "' . admin_url( 'admin-ajax.php' ) . '";</script>';
@@ -38,7 +40,7 @@ class Init {
     require_once PRESSCOUNT_INC . 'classes/class-shortcodes.php';
 
     if( is_admin() ) {
-      require_once PRESSCOUNT_INC . 'admin/classes/class-admin-init.php';
+      require_once PRESSCOUNT_INC . 'admin/classes/class-init.php';
     }
   }
 }
