@@ -35,6 +35,7 @@ class Init {
    */
   private function load_dependencies() {
     require_once PRESSCOUNT_INC . 'functions/helper.php';
+    require_once PRESSCOUNT_INC . 'classes/class-cache.php';
     require_once PRESSCOUNT_INC . 'classes/class-requests.php';
     require_once PRESSCOUNT_INC . 'classes/class-ajax.php';
     require_once PRESSCOUNT_INC . 'classes/class-shortcodes.php';

@@ -8,6 +8,7 @@
 
 
 namespace Elexicon\PressCount\Social;
+use \Elexicon\PressCount\Core\Cache as Cache;
 
 if ( ! defined( 'ABSPATH' ) ) exit(); // No direct access
 
@@ -18,12 +19,6 @@ class Requests {
    * @var string
    */
   private $url;
-
-  /**
-   * Post ID
-   * @var int
-   */
-  private $pid;
 
   /**
    * Facebook API Endpoint
@@ -44,17 +39,25 @@ class Requests {
   private $pinterest_endpoint;
 
   /**
+   * Cache Object
+   * @var object
+   */
+  private $cache;
+
+  /**
    * Constructs the request variables & urls
+   * Initializes the PressCount Cache Object
    *
    * @param string $url URL for the post
    */
   public function __construct( $url ) {
     $this->url = $url;
-    $this->pid = url_to_postid( $this->url );
 
     $this->fb_endpoint = 'http://graph.facebook.com/?id=' . $this->url;
     $this->linkedin_endpoint = 'http://www.linkedin.com/countserv/count/share?url=' . $this->url . '&format=json';
     $this->pinterest_endpoint = 'http://api.pinterest.com/v1/urls/count.json?url=' . $this->url;
+
+    $this->cache = new Cache();
   }
 
   /**
@@ -130,24 +133,21 @@ class Requests {
    */
   public function get_all_shares() {
 
-    if( $this->pid !== 0 && get_transient( $this->pid . "_post_shares" ) ) {
-      return get_transient( $this->pid . "_post_shares" );
+    // Give the user an option to set a "starting" share amount
+    $share_base = apply_filters( 'presscount_share_base', 0 );
+
+    // Get shares from cache if available
+    $total_shares = $this->cache->get_cached_shares( $this->url );
+
+    if( ! $total_shares ) {
+      $total_shares += $this->get_fb();
+      $total_shares += $this->get_linkedin();
+      $total_shares += $this->get_pinterest();
     }
-
-    $share_base = 0;
-    $total_shares = 0;
-
-    $total_shares += $this->get_fb();
-    $total_shares += $this->get_linkedin();
-    $total_shares += $this->get_pinterest();
 
     $total_shares = $share_base + $total_shares;
 
-    if( $this->pid !== 0 ) {
-      // Save total share count to database
-      set_transient( $this->pid . "_post_shares", $total_shares, apply_filters( 'presscount_expire', 3600 ) );
-      update_post_meta( $this->pid, '_post_shares', $total_shares );
-    }
+    $this->cache->cache_shares( $this->url, $total_shares );
 
     return $total_shares;
   }
