@@ -66,7 +66,7 @@ class Cache {
       delete_transient( $this->prefix . $cache_key );
 
       return true;
-      
+
     } else {
       $transients = $this->get_transients_by_prefix();
 
