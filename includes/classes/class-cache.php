@@ -20,10 +20,27 @@ class Cache {
   protected $prefix;
 
   /**
+   * Allowed PressCount Networks
+   * @var array
+   */
+  protected $networks;
+
+  /**
    * Initializes the PressCount Cache
    */
   public function __construct() {
+    // Base key
     $this->prefix = '_presscount_shares_';
+
+    // Allowed networks
+    $this->networks = array(
+      'facebook',
+      'linkedin',
+      'pinterest'
+    );
+
+    add_action( 'wp_ajax_clear_presscount_cache', array( $this, 'ajax_clear_cache' ) );
+    add_action( 'wp_ajax_nopriv_clear_presscount_cache', array( $this, 'ajax_clear_cache' ) );
   }
 
   /**
@@ -32,8 +49,10 @@ class Cache {
    * @param  string $url URL to get cached share counts for
    * @return int         The number of shares from cache
    */
-  public function get_cached_shares( $url ) {
+  public function get_cached_shares( $url, $network = false ) {
     $cache_key = md5( $url );
+
+    $this->prefix = $this->network_cache_key( $network );
 
     return get_transient( $this->prefix . $cache_key );
   }
@@ -45,13 +64,29 @@ class Cache {
    * @param  int $shares    The number of times that URL was shared
    * @return void
    */
-  public function cache_shares( $url, $shares ) {
+  public function cache_shares( $url, $shares, $network = false ) {
     if( ! empty( $url ) ) {
       $cache_key = md5( $url );
+
+      $this->prefix = $this->network_cache_key( $network );
+
       set_transient( $this->prefix . $cache_key, $shares, apply_filters( 'presscount_expire', 3600 ) );
     }
 
     return true;
+  }
+
+  /**
+   * Delete PressCount Transients/Cache via AJAX
+   *
+   * @return void
+   */
+  public function ajax_clear_cache() {
+    $url = ( isset( $_POST['url'] ) ? $_POST['url'] : false );
+    $network = ( isset( $_POST['network'] ) ? $_POST['network'] : false );
+
+    $this->clear_cache( $url, $network );
+    die();
   }
 
   /**
@@ -60,9 +95,12 @@ class Cache {
    * @param  boolean $url URL to clear of cache (default false for all)
    * @return array        Array of cleared cached data
    */
-  public function clear_cache( $url = false ) {
-    if( ! $url ) {
+  private function clear_cache( $url = false, $network = false ) {
+    if( $url ) {
       $cache_key = md5( $url );
+
+      $this->prefix = $this->network_cache_key( $network );
+
       delete_transient( $this->prefix . $cache_key );
 
       return true;
@@ -74,28 +112,26 @@ class Cache {
         return false;
       }
 
-      if( is_string( $transients ) ) {
-        $transients = array( array( 'option_name' => $transients ) );
-      }
-
-      if( ! is_array( $transients ) ) {
-        return false;
-      }
-
       $results = array();
 
-      foreach( $transients as $transient ) {
-        if( is_array( $transient ) ) {
-          $transient = current( $transient );
+      if( is_array( $transients ) ) {
+        foreach( $transients as $transient ) {
+
+          if( is_array( $transient ) ) {
+            $transient = current( $transient );
+
+            $trans = str_replace( '_transient_', '', $transient['option_name'] );
+            $results[$trans] = delete_transient( $trans );
+          }
         }
 
-        $results[ $transient ] = delete_transient( str_replace( '_transient_', '', $transient ) );
+        return array(
+          'total' => count( $results ),
+          'deleted' => array_sum( $results )
+        );
       }
 
-      return array(
-        'total' => count( $results ),
-        'deleted' => array_sum( $results )
-      );
+      return false;
     }
   }
 
@@ -107,17 +143,41 @@ class Cache {
   private function get_transients_by_prefix() {
     global $wpdb;
 
-    $trans_prefix = $wpdb->esc_like( '_transient_' . $this->prefix . '_' );
+    $transients = array();
 
-    $sql = "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%s'";
+    foreach( $this->networks as $network ) {
+      $trans_prefix = $wpdb->esc_like( '_transient_' . $this->network_cache_key( $network ) );
 
-    $transients = $wpdb->get_results( $wpdb->prepare( $sql, $trans_prefix ), ARRAY_A );
+      $sql = "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%s'";
 
-    if( $transients && ! is_wp_error( $transients ) ) {
-      return $transients;
+      $res = $wpdb->get_results( $wpdb->prepare( $sql, $trans_prefix . '%' ), ARRAY_A );
+
+      if( is_wp_error( $res ) ) {
+        return false;
+      }
+
+      $transients[] = $res;
     }
 
-    return false;
+    if( ! is_array( $transients ) || empty( $transients ) ) {
+      return false;
+    }
+
+    return $transients;
+  }
+
+  /**
+   * Set the cache prefix for networks
+   *
+   * @param  string $network Network to retrieve cached shares for
+   * @return string          The new cache prefix
+   */
+  private function network_cache_key( $network ) {
+    if( ! $network || ! in_array( $network, $this->networks ) || strpos($this->prefix, $network) ) {
+      return $this->prefix;
+    }
+
+    return $this->prefix . $network . '_';
   }
 }
 

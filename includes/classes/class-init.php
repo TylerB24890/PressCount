@@ -15,6 +15,7 @@ class Init {
 
   public function __construct() {
     add_action( 'wp_head', array( $this, 'add_ajax_url' ) );
+    add_action( 'wp_enqueue_scripts', array( $this, 'check_jquery' ) );
 
     $this->load_dependencies();
   }
@@ -42,6 +43,18 @@ class Init {
 
     if( is_admin() ) {
       require_once PRESSCOUNT_INC . 'admin/classes/class-init.php';
+    }
+  }
+
+  /**
+   * Check that jQuery is enqueued
+   * If not, enqueue it!
+   *
+   * @return null
+   */
+  public function check_jquery() {
+    if( ! wp_script_is( 'jquery', 'enqueued' ) && ! is_admin() ) {
+      wp_enqueue_script( 'jquery' );
     }
   }
 }

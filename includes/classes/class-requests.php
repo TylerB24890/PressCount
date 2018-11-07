@@ -67,19 +67,23 @@ class Requests {
    */
   public function get_fb() {
 
-    $resp = wp_remote_get( $this->fb_endpoint );
+    $share_count = $this->cache->get_cached_shares( $this->url, 'facebook' );
 
-    if( is_array( $resp ) ) {
-      $json_string = $resp['body'];
+    if( ! $share_count ) {
+      $resp = wp_remote_get( $this->fb_endpoint );
 
-      $json = json_decode( $json_string, true );
+      if( is_array( $resp ) ) {
+        $json_string = $resp['body'];
 
-      $share_count = ( isset( $json['share']['share_count'] ) ? intval( $json['share']['share_count'] ) : 0 );
+        $json = json_decode( $json_string, true );
 
-      return $share_count;
+        $share_count = ( isset( $json['share']['share_count'] ) ? intval( $json['share']['share_count'] ) : 0 );
+
+        $this->cache->cache_shares( $this->url, $share_count, 'facebook' );
+      }
     }
 
-    return false;
+    return $share_count;
   }
 
   /**
@@ -89,17 +93,21 @@ class Requests {
    */
   public function get_linkedin() {
 
-    $resp = wp_remote_get( $this->linkedin_endpoint );
+    $share_count = $this->cache->get_cached_shares( $this->url, 'linkedin' );
 
-    if( is_array( $resp ) ) {
-      $json = json_decode( $resp['body'], true );
+    if( ! $share_count ) {
+      $resp = wp_remote_get( $this->linkedin_endpoint );
 
-      $share_count = ( isset( $json['count'] ) ? intval( $json['count'] ) : 0 );
+      if( is_array( $resp ) ) {
+        $json = json_decode( $resp['body'], true );
 
-      return $share_count;
+        $share_count = ( isset( $json['count'] ) ? intval( $json['count'] ) : 0 );
+
+        $this->cache->cache_shares( $this->url, $share_count, 'linkedin' );
+      }
     }
 
-    return false;
+    return $share_count;
   }
 
   /**
@@ -109,18 +117,22 @@ class Requests {
    */
   public function get_pinterest() {
 
-    $resp = wp_remote_get( $this->pinterest_endpoint );
+    $share_count = $this->cache->get_cached_shares( $this->url, 'pinterest' );
 
-    if( is_array( $resp ) ) {
-      $json_string = preg_replace( '/^receiveCount\((.*)\)$/', "\\1", $resp['body'] );
-      $json = json_decode( $json_string, true );
+    if( ! $share_count ) {
+      $resp = wp_remote_get( $this->pinterest_endpoint );
 
-      $share_count = ( isset( $json['count'] ) ? intval( $json['count'] ) : 0 );
+      if( is_array( $resp ) ) {
+        $json_string = preg_replace( '/^receiveCount\((.*)\)$/', "\\1", $resp['body'] );
+        $json = json_decode( $json_string, true );
 
-      return $share_count;
+        $share_count = ( isset( $json['count'] ) ? intval( $json['count'] ) : 0 );
+
+        $this->cache->cache_shares( $this->url, $share_count, 'pinterest' );
+      }
     }
 
-    return false;
+    return $share_count;
   }
 
   /**
@@ -136,18 +148,19 @@ class Requests {
     // Give the user an option to set a "starting" share amount
     $share_base = apply_filters( 'presscount_share_base', 0 );
 
-    // Get shares from cache if available
-    $total_shares = $this->cache->get_cached_shares( $this->url );
-
-    if( ! $total_shares ) {
+    if( get_option( 'presscount_facebook' ) === 'true' ) {
       $total_shares += $this->get_fb();
+    }
+
+    if( get_option( 'presscount_linkedin' ) === 'true' ) {
       $total_shares += $this->get_linkedin();
+    }
+
+    if( get_option( 'presscount_pinterest' ) === 'true' ) {
       $total_shares += $this->get_pinterest();
     }
 
     $total_shares = $share_base + $total_shares;
-
-    $this->cache->cache_shares( $this->url, $total_shares );
 
     return $total_shares;
   }

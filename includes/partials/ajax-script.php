@@ -7,14 +7,7 @@
  */
 ?>
 
-<?php
-$cache = new \Elexicon\PressCount\Core\Cache();
-$cached_shares = $cache->get_cached_shares(get_the_permalink());
-$share_text = ($cached_shares && $cached_shares == 1 ? $text_single : $text_multiple);
-?>
-<span id="presscount_<?php echo $id;  ?>"><?php echo($cached_shares ? $cached_shares . ($text ? ' ' . $share_text : '') : ''); ?></span>
-
-<?php if( ! $cached_shares ) : ?>
+<span id="presscount_<?php echo $id;  ?>"></span>
 
 <script type="text/javascript">
   jQuery( document ).ready( function() {
@@ -42,4 +35,3 @@ $share_text = ($cached_shares && $cached_shares == 1 ? $text_single : $text_mult
     });
   });
 </script>
-<?php endif; ?>
