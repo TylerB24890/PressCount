@@ -47,14 +47,27 @@ class Cache {
    * Return cached share counts by URL
    *
    * @param  string $url URL to get cached share counts for
+   * @param  string $network Network to get share counts for
    * @return int         The number of shares from cache
    */
-  public function get_cached_shares( $url, $network = false ) {
+  public function get_cached_shares( $url = false, $network = false ) {
+    $url = ( $url ? $url : presscount_post_url() );
     $cache_key = md5( $url );
+    $shares = false;
+    
+    if ( ! $network ) {
+      foreach( $this->networks as $service ) {
+        if( get_option( 'presscount_' . $service ) === 'true' ) {
+          $new_prefix = $this->network_cache_key( $service );
+          $shares += get_transient( $new_prefix . $cache_key );
+        }
+      }
+    } else {
+      $this->prefix = $this->network_cache_key( $network );
+      $shares = get_transient( $this->prefix . $cache_key );
+    }
 
-    $this->prefix = $this->network_cache_key( $network );
-
-    return get_transient( $this->prefix . $cache_key );
+    return $shares;
   }
 
   /**
@@ -172,8 +185,8 @@ class Cache {
    * @param  string $network Network to retrieve cached shares for
    * @return string          The new cache prefix
    */
-  private function network_cache_key( $network ) {
-    if( ! $network || ! in_array( $network, $this->networks ) || strpos($this->prefix, $network) ) {
+  private function network_cache_key( $network = false ) {
+    if( $network === false ) {
       return $this->prefix;
     }
 
