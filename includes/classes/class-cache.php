@@ -54,17 +54,17 @@ class Cache {
     $url = ( $url ? $url : presscount_post_url() );
     $cache_key = md5( $url );
     $shares = false;
-    
+
     if ( ! $network ) {
       foreach( $this->networks as $service ) {
         if( get_option( 'presscount_' . $service ) === 'true' ) {
-          $new_prefix = $this->network_cache_key( $service );
-          $shares += get_transient( $new_prefix . $cache_key );
+          $network_prefix = $this->network_cache_key( $service );
+          $shares += get_transient( $network_prefix . $cache_key );
         }
       }
     } else {
-      $this->prefix = $this->network_cache_key( $network );
-      $shares = get_transient( $this->prefix . $cache_key );
+      $network_prefix = $this->network_cache_key( $network );
+      $shares = get_transient( $network_prefix . $cache_key );
     }
 
     return $shares;
@@ -81,9 +81,9 @@ class Cache {
     if( ! empty( $url ) ) {
       $cache_key = md5( $url );
 
-      $this->prefix = $this->network_cache_key( $network );
+      $network_prefix = $this->network_cache_key( $network );
 
-      set_transient( $this->prefix . $cache_key, $shares, apply_filters( 'presscount_expire', 3600 ) );
+      set_transient( $network_prefix . $cache_key, $shares, apply_filters( 'presscount_expire', 3600 ) );
     }
 
     return true;
@@ -112,9 +112,9 @@ class Cache {
     if( $url ) {
       $cache_key = md5( $url );
 
-      $this->prefix = $this->network_cache_key( $network );
+      $network_prefix = $this->network_cache_key( $network );
 
-      delete_transient( $this->prefix . $cache_key );
+      delete_transient( $network_prefix . $cache_key );
 
       return true;
 

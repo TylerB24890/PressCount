@@ -23,6 +23,7 @@ class Init {
   }
 
   private function load_admin_dependencies() {
+    require_once PRESSCOUNT_INC . 'admin/classes/class-assets.php';
     require_once PRESSCOUNT_INC . 'admin/classes/class-pages.php';
     require_once PRESSCOUNT_INC . 'admin/classes/class-settings.php';
   }

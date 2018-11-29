@@ -18,7 +18,7 @@ class Pages {
   }
 
   public function add_admin_pages() {
-    add_menu_page(
+    add_options_page(
       __( 'PressCount', 'presscount' ),
       __( 'PressCount', 'presscount' ),
       'manage_options',
