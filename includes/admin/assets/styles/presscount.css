@@ -1,0 +1,9 @@
+#presscount.wrap .presscount-cache {
+  margin: 30px 0;
+}
+#presscount.wrap .presscount-cache button.button {
+  font-size: 18px;
+  line-height: normal;
+  height: auto;
+  padding: 8px 20px;
+}
