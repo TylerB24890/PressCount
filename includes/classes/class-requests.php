@@ -147,6 +147,7 @@ class Requests {
 
     // Give the user an option to set a "starting" share amount
     $share_base = apply_filters( 'presscount_share_base', 0 );
+    $total_shares = intval( $share_base );
 
     if( get_option( 'presscount_facebook' ) === 'true' ) {
       $total_shares += $this->get_fb();
@@ -159,8 +160,6 @@ class Requests {
     if( get_option( 'presscount_pinterest' ) === 'true' ) {
       $total_shares += $this->get_pinterest();
     }
-
-    $total_shares = $share_base + $total_shares;
 
     return $total_shares;
   }
