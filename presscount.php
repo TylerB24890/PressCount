@@ -9,14 +9,14 @@
  * that starts the plugin.
  *
  * @link              http://elexicon.com
- * @since             1.0.0
+ * @since             0.6.0
  * @package           PressCount
  *
  * @wordpress-plugin
  * Plugin Name:       PressCount
  * Plugin URI:        http://elexicon.com
  * Description:       Collect and display social sharing data for individual articles & pages. View, analyize and sort data through the PressCount dashboard.
- * Version:           1.0.0
+ * Version:           0.6.0
  * Author:            Elexicon
  * Author URI:        http://elexicon.com
  * License:           GPL-2.0+
